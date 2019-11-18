@@ -134,16 +134,15 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) async {
+  void deleteProduct(String id) {
     final url =
         'https://flutter-project-93660.firebaseio.com/products/$id.json';
-    try {
-      await http.delete(url);
-    _items.removeWhere((prod) => prod.id == id);
+    final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
+    final existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
+    http.delete(url).catchError((_) {
+      _items.insert(existingProductIndex, existingProduct);
+    });
     notifyListeners();
-    } catch(error) {
-      throw error;
-    }
-    
   }
 }
