@@ -138,9 +138,11 @@ class Products with ChangeNotifier {
     final url =
         'https://flutter-project-93660.firebaseio.com/products/$id.json';
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
-    final existingProduct = _items[existingProductIndex];
+    var existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
-    http.delete(url).catchError((_) {
+    http.delete(url).then((_) {
+      existingProduct = null;
+    }).catchError((_) {
       _items.insert(existingProductIndex, existingProduct);
     });
     notifyListeners();
